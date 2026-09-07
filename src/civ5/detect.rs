@@ -1,8 +1,8 @@
 use super::{
     paths,
-    version::{identify_file, sha256_file, SupportedBinary, SupportedVersion},
+    version::{SupportedBinary, SupportedVersion, identify_file, sha256_file},
 };
-use anyhow::{bail, Context, Result};
+use anyhow::{Result, bail};
 use std::path::{Path, PathBuf};
 
 #[derive(Debug, Clone)]
@@ -17,7 +17,6 @@ pub struct Civ5Installation {
 pub enum DetectedPlatform {
     Linux,
     Windows,
-    Unknown,
 }
 
 impl DetectedPlatform {
@@ -25,7 +24,6 @@ impl DetectedPlatform {
         match self {
             Self::Linux => "Linux",
             Self::Windows => "Windows",
-            Self::Unknown => "Unknown",
         }
     }
 }
@@ -102,20 +100,13 @@ pub fn identify_existing_binary(root: &Path) -> Result<Option<(PathBuf, Supporte
         match sha256_file(&candidate) {
             Ok(hash) => {
                 if hash == SupportedVersion::CIV5_1_0_3_279_LINUX.sha256 {
-                    return Ok(Some((
-                        candidate,
-                        SupportedVersion::CIV5_1_0_3_279_LINUX,
-                    )));
+                    return Ok(Some((candidate, SupportedVersion::CIV5_1_0_3_279_LINUX)));
                 }
 
                 if hash == SupportedVersion::CIV5_1_0_3_279_WINDOWS.sha256 {
-                    return Ok(Some((
-                        candidate,
-                        SupportedVersion::CIV5_1_0_3_279_WINDOWS,
-                    )));
+                    return Ok(Some((candidate, SupportedVersion::CIV5_1_0_3_279_WINDOWS)));
                 }
             }
-
             Err(_) => continue,
         }
     }

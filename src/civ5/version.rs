@@ -1,4 +1,4 @@
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 use sha2::{Digest, Sha256};
 use std::{
     fs::File,
@@ -13,13 +13,6 @@ pub enum SupportedBinary {
 }
 
 impl SupportedBinary {
-    pub fn filename(self) -> &'static str {
-        match self {
-            Self::LinuxCiv5Xp => "Civ5XP",
-            Self::WindowsCvGameDatabase => "CvGameDatabaseWin32Final Release.dll",
-        }
-    }
-
     pub fn description(self) -> &'static str {
         match self {
             Self::LinuxCiv5Xp => "Civ V Linux executable",
@@ -53,8 +46,7 @@ impl SupportedVersion {
 }
 
 pub fn sha256_file(path: &Path) -> Result<String> {
-    let file = File::open(path)
-        .with_context(|| format!("unable to open {}", path.display()))?;
+    let file = File::open(path).with_context(|| format!("unable to open {}", path.display()))?;
 
     let mut reader = BufReader::new(file);
     let mut hasher = Sha256::new();
@@ -82,22 +74,20 @@ pub fn identify_file(path: &Path) -> Result<SupportedVersion> {
 
     let hash = sha256_file(path)?;
 
-    match hash.as_str() {
-        SupportedVersion::CIV5_1_0_3_279_LINUX.sha256 => {
-            Ok(SupportedVersion::CIV5_1_0_3_279_LINUX)
-        }
-
-        SupportedVersion::CIV5_1_0_3_279_WINDOWS.sha256 => {
-            Ok(SupportedVersion::CIV5_1_0_3_279_WINDOWS)
-        }
-
-        _ => bail!(
-            "unsupported Civilization V binary\n\n\
-             File: {}\n\
-             SHA-256: {}\n\n\
-             CivMPX will not modify an unknown binary.",
-            path.display(),
-            hash
-        ),
+    if hash == SupportedVersion::CIV5_1_0_3_279_LINUX.sha256 {
+        return Ok(SupportedVersion::CIV5_1_0_3_279_LINUX);
     }
+
+    if hash == SupportedVersion::CIV5_1_0_3_279_WINDOWS.sha256 {
+        return Ok(SupportedVersion::CIV5_1_0_3_279_WINDOWS);
+    }
+
+    bail!(
+        "unsupported Civilization V binary\n\n\
+         File: {}\n\
+         SHA-256: {}\n\n\
+         CivMPX will not modify an unknown binary.",
+        path.display(),
+        hash
+    )
 }

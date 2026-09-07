@@ -1,9 +1,5 @@
 mod civ5;
 mod cli;
-mod inspect;
-mod patch;
-mod platform;
-mod proton;
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};

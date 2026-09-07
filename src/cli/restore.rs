@@ -1,5 +1,5 @@
 use crate::civ5::paths;
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result};
 use std::{
     fs,
     path::{Path, PathBuf},
@@ -12,6 +12,10 @@ pub fn run(root: &Path, dry_run: bool) -> Result<()> {
     println!("Target:");
     println!("  {}", root.display());
     println!();
+
+    if !root.is_dir() {
+        anyhow::bail!("{} is not a directory", root.display());
+    }
 
     let mut actions = Vec::new();
 
@@ -60,11 +64,7 @@ pub fn run(root: &Path, dry_run: bool) -> Result<()> {
                 )
             })?;
 
-            println!(
-                "Moved current {} to {}",
-                name,
-                quarantine.display()
-            );
+            println!("Moved current {} to {}", name, quarantine.display());
         }
 
         fs::rename(&original, &current).with_context(|| {
@@ -75,7 +75,7 @@ pub fn run(root: &Path, dry_run: bool) -> Result<()> {
             )
         })?;
 
-        println!("Restored {}", name);
+        println!("Restored {name}");
     }
 
     println!();

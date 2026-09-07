@@ -1,15 +1,15 @@
-use crate::civ5::{
-    detect::{detect_installation, validate_required_linux_files, validate_required_windows_files},
-    DetectedPlatform,
+use crate::civ5::detect::{
+    DetectedPlatform, detect_installation, validate_required_linux_files,
+    validate_required_windows_files,
 };
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
 use std::path::Path;
 
 pub fn run(root: &Path, dry_run: bool) -> Result<()> {
     let installation = detect_installation(root)?;
 
     println!("CivMPX patch");
-    println!("============");
+    println!("=============");
     println!();
     println!("Target:");
     println!("  {}", installation.root.display());
@@ -25,13 +25,8 @@ pub fn run(root: &Path, dry_run: bool) -> Result<()> {
         DetectedPlatform::Linux => {
             validate_required_linux_files(root)?;
         }
-
         DetectedPlatform::Windows => {
             validate_required_windows_files(root)?;
-        }
-
-        DetectedPlatform::Unknown => {
-            bail!("unsupported platform");
         }
     }
 
