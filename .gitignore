@@ -1,0 +1,18 @@
+/target/
+
+# Editors
+.vscode/
+.idea/
+
+# Temporary files
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Reverse-engineering artifacts
+*.i64
+*.idb
+*.ghidra
+*.gpr
+*.rep

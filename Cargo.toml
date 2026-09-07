@@ -1,0 +1,11 @@
+[package]
+name = "civmpx"
+version = "0.1.0"
+edition = "2024"
+description = "Modern multiplayer extension tooling for Sid Meier's Civilization V"
+license = "MIT"
+readme = "README.md"
+keywords = ["civilization", "civ5", "multiplayer", "proton", "patching"]
+categories = ["command-line-utilities", "game-development"]
+
+[dependencies]
