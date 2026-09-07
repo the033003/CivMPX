@@ -1,30 +1,48 @@
 use crate::civ5::detect::{
-    DetectedPlatform, detect_installation, validate_required_linux_files,
+    DetectedPlatform, InstallationState, inspect_installation, validate_required_linux_files,
     validate_required_windows_files,
 };
 use anyhow::{Result, bail};
 use std::path::Path;
 
 pub fn run(root: &Path, dry_run: bool) -> Result<()> {
-    let installation = detect_installation(root)?;
+    let inspection = inspect_installation(root)?;
+    let installation = &inspection.installation;
 
     println!("CivMPX patch");
-    println!("=============");
+    println!("============");
     println!();
+
     println!("Target:");
     println!("  {}", installation.root.display());
+
     println!("Platform:");
     println!("  {}", installation.platform.name());
+
     println!("Version:");
     println!("  {}", installation.version.version);
+
     println!("Identity:");
     println!("  {}", installation.identity_file.display());
+
     println!();
+
+    if inspection.state == InstallationState::LegacyMppatch {
+        bail!(
+            "legacy MPPatch installation detected.\n\n\
+             CivMPX will not patch an installation that is already managed \
+             by MPPatch.\n\n\
+             Restore the Civilization V installation to its clean state first, \
+             then run CivMPX again.\n\n\
+             Nothing was modified."
+        );
+    }
 
     match installation.platform {
         DetectedPlatform::Linux => {
             validate_required_linux_files(root)?;
         }
+
         DetectedPlatform::Windows => {
             validate_required_windows_files(root)?;
         }
